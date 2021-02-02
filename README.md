@@ -1,2 +1,2 @@
 # mlb-database
-A database storing MLB player's stats
+A python library that scrapes www.mlb.com and saves data into a PostgreSQL database.
