@@ -1,0 +1,572 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 10.12 (Ubuntu 10.12-0ubuntu0.18.04.1)
+-- Dumped by pg_dump version 10.12 (Ubuntu 10.12-0ubuntu0.18.04.1)
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+--
+-- Name: pitcher_profile(integer); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.pitcher_profile(playerid integer) RETURNS TABLE(type character varying, count bigint)
+    LANGUAGE plpgsql
+    AS $$
+begin
+return query
+select b.type, count(*) as count
+from 
+(select atbatid
+from atbats
+where pitcherid=playerid) a
+inner join pitchseq b
+on a.atbatid = b.atbatid
+group by b.type
+order by b.type;
+end; $$;
+
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- Name: actions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.actions (
+    action character varying,
+    hit boolean,
+    "out" boolean,
+    h integer,
+    o integer,
+    ab integer
+);
+
+
+--
+-- Name: atbats; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.atbats (
+    atbatid integer NOT NULL,
+    gameid integer NOT NULL,
+    pitcherid integer NOT NULL,
+    batterid integer NOT NULL,
+    inn integer NOT NULL,
+    num integer NOT NULL,
+    action character varying NOT NULL
+);
+
+
+--
+-- Name: atbats_atbatid_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.atbats_atbatid_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: atbats_atbatid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.atbats_atbatid_seq OWNED BY public.atbats.atbatid;
+
+
+--
+-- Name: batorder; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.batorder (
+    batorderid integer NOT NULL,
+    playerid integer NOT NULL,
+    order_num integer NOT NULL
+);
+
+
+--
+-- Name: batorder_batorderid_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.batorder_batorderid_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: batorder_batorderid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.batorder_batorderid_seq OWNED BY public.batorder.batorderid;
+
+
+--
+-- Name: batterstats; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.batterstats (
+    gameid integer NOT NULL,
+    teamid integer NOT NULL,
+    playerid integer NOT NULL,
+    ab integer NOT NULL,
+    r integer NOT NULL,
+    h integer NOT NULL,
+    dubs integer NOT NULL,
+    trips integer NOT NULL,
+    hrs integer NOT NULL,
+    rbi integer NOT NULL,
+    bb integer NOT NULL,
+    so integer NOT NULL
+);
+
+
+--
+-- Name: gameids; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.gameids (
+    gameid integer NOT NULL,
+    year smallint NOT NULL
+);
+
+
+--
+-- Name: games; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.games (
+    gameid integer NOT NULL,
+    homeid integer NOT NULL,
+    awayid integer NOT NULL,
+    date date NOT NULL,
+    "time" time without time zone
+);
+
+
+--
+-- Name: lineup; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.lineup (
+    gameid integer NOT NULL,
+    teamid integer NOT NULL,
+    sp integer NOT NULL,
+    b1 integer NOT NULL,
+    b2 integer NOT NULL,
+    b3 integer NOT NULL,
+    c integer NOT NULL,
+    dh integer NOT NULL,
+    of1 integer NOT NULL,
+    of2 integer NOT NULL,
+    of3 integer NOT NULL,
+    ss integer NOT NULL
+);
+
+
+--
+-- Name: pitcherstats; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.pitcherstats (
+    gameid integer NOT NULL,
+    teamid integer NOT NULL,
+    playerid integer NOT NULL,
+    ip real NOT NULL,
+    h integer NOT NULL,
+    r integer NOT NULL,
+    er integer NOT NULL,
+    hrs integer NOT NULL,
+    bb integer NOT NULL,
+    so integer NOT NULL,
+    gb integer NOT NULL,
+    fb integer NOT NULL,
+    pit integer NOT NULL,
+    bf integer NOT NULL
+);
+
+
+--
+-- Name: pitchseq; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.pitchseq (
+    atbatid integer NOT NULL,
+    num integer NOT NULL,
+    type character varying,
+    speed real,
+    call character varying NOT NULL
+);
+
+
+--
+-- Name: players; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.players (
+    playerid integer NOT NULL,
+    fname character varying NOT NULL,
+    mname character varying,
+    lname character varying NOT NULL,
+    name character varying,
+    pos character(2),
+    dob date,
+    bats character(1),
+    throws character(1)
+);
+
+
+--
+-- Name: teams; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.teams (
+    teamid integer NOT NULL,
+    short_name character varying NOT NULL,
+    url_name character varying NOT NULL,
+    abbr character(3) NOT NULL,
+    name character varying NOT NULL,
+    league character varying NOT NULL,
+    region character varying NOT NULL
+);
+
+
+--
+-- Name: atbats atbatid; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.atbats ALTER COLUMN atbatid SET DEFAULT nextval('public.atbats_atbatid_seq'::regclass);
+
+
+--
+-- Name: batorder batorderid; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.batorder ALTER COLUMN batorderid SET DEFAULT nextval('public.batorder_batorderid_seq'::regclass);
+
+
+--
+-- Name: atbats atbats_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.atbats
+    ADD CONSTRAINT atbats_pkey PRIMARY KEY (atbatid);
+
+
+--
+-- Name: batorder batorder_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.batorder
+    ADD CONSTRAINT batorder_pkey PRIMARY KEY (batorderid);
+
+
+--
+-- Name: batorder batorder_playerid_order_num_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.batorder
+    ADD CONSTRAINT batorder_playerid_order_num_key UNIQUE (playerid, order_num);
+
+
+--
+-- Name: batterstats batterstats_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.batterstats
+    ADD CONSTRAINT batterstats_pkey PRIMARY KEY (gameid, playerid);
+
+
+--
+-- Name: gameids gameids_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.gameids
+    ADD CONSTRAINT gameids_pkey PRIMARY KEY (gameid);
+
+
+--
+-- Name: games games_pkey1; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.games
+    ADD CONSTRAINT games_pkey1 PRIMARY KEY (gameid);
+
+
+--
+-- Name: lineup lineup_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.lineup
+    ADD CONSTRAINT lineup_pkey PRIMARY KEY (gameid, teamid);
+
+
+--
+-- Name: pitcherstats pitcherstats_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.pitcherstats
+    ADD CONSTRAINT pitcherstats_pkey PRIMARY KEY (gameid, playerid);
+
+
+--
+-- Name: pitchseq pitchseq_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.pitchseq
+    ADD CONSTRAINT pitchseq_pkey PRIMARY KEY (atbatid, num);
+
+
+--
+-- Name: players players_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.players
+    ADD CONSTRAINT players_pkey PRIMARY KEY (playerid);
+
+
+--
+-- Name: teams teams_pkey1; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.teams
+    ADD CONSTRAINT teams_pkey1 PRIMARY KEY (teamid);
+
+
+--
+-- Name: atbats atbats_batterid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.atbats
+    ADD CONSTRAINT atbats_batterid_fkey FOREIGN KEY (batterid) REFERENCES public.players(playerid);
+
+
+--
+-- Name: atbats atbats_gameid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.atbats
+    ADD CONSTRAINT atbats_gameid_fkey FOREIGN KEY (gameid) REFERENCES public.games(gameid);
+
+
+--
+-- Name: atbats atbats_pitcherid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.atbats
+    ADD CONSTRAINT atbats_pitcherid_fkey FOREIGN KEY (pitcherid) REFERENCES public.players(playerid);
+
+
+--
+-- Name: batorder batorder_playerid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.batorder
+    ADD CONSTRAINT batorder_playerid_fkey FOREIGN KEY (playerid) REFERENCES public.players(playerid);
+
+
+--
+-- Name: batterstats batterstats_gameid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.batterstats
+    ADD CONSTRAINT batterstats_gameid_fkey FOREIGN KEY (gameid) REFERENCES public.games(gameid);
+
+
+--
+-- Name: batterstats batterstats_playerid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.batterstats
+    ADD CONSTRAINT batterstats_playerid_fkey FOREIGN KEY (playerid) REFERENCES public.players(playerid);
+
+
+--
+-- Name: batterstats batterstats_teamid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.batterstats
+    ADD CONSTRAINT batterstats_teamid_fkey FOREIGN KEY (teamid) REFERENCES public.teams(teamid);
+
+
+--
+-- Name: games games_awayid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.games
+    ADD CONSTRAINT games_awayid_fkey FOREIGN KEY (awayid) REFERENCES public.teams(teamid);
+
+
+--
+-- Name: games games_homeid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.games
+    ADD CONSTRAINT games_homeid_fkey FOREIGN KEY (homeid) REFERENCES public.teams(teamid);
+
+
+--
+-- Name: lineup lineup_b1_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.lineup
+    ADD CONSTRAINT lineup_b1_fkey FOREIGN KEY (b2) REFERENCES public.batorder(batorderid);
+
+
+--
+-- Name: lineup lineup_b2_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.lineup
+    ADD CONSTRAINT lineup_b2_fkey FOREIGN KEY (b3) REFERENCES public.batorder(batorderid);
+
+
+--
+-- Name: lineup lineup_b3_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.lineup
+    ADD CONSTRAINT lineup_b3_fkey FOREIGN KEY (c) REFERENCES public.batorder(batorderid);
+
+
+--
+-- Name: lineup lineup_c_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.lineup
+    ADD CONSTRAINT lineup_c_fkey FOREIGN KEY (b1) REFERENCES public.batorder(batorderid);
+
+
+--
+-- Name: lineup lineup_dh_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.lineup
+    ADD CONSTRAINT lineup_dh_fkey FOREIGN KEY (ss) REFERENCES public.batorder(batorderid);
+
+
+--
+-- Name: lineup lineup_gameid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.lineup
+    ADD CONSTRAINT lineup_gameid_fkey FOREIGN KEY (gameid) REFERENCES public.gameids(gameid);
+
+
+--
+-- Name: lineup lineup_of1_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.lineup
+    ADD CONSTRAINT lineup_of1_fkey FOREIGN KEY (of1) REFERENCES public.batorder(batorderid);
+
+
+--
+-- Name: lineup lineup_of2_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.lineup
+    ADD CONSTRAINT lineup_of2_fkey FOREIGN KEY (of2) REFERENCES public.batorder(batorderid);
+
+
+--
+-- Name: lineup lineup_of3_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.lineup
+    ADD CONSTRAINT lineup_of3_fkey FOREIGN KEY (of3) REFERENCES public.batorder(batorderid);
+
+
+--
+-- Name: lineup lineup_pitcher_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.lineup
+    ADD CONSTRAINT lineup_pitcher_fkey FOREIGN KEY (sp) REFERENCES public.players(playerid);
+
+
+--
+-- Name: lineup lineup_ss_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.lineup
+    ADD CONSTRAINT lineup_ss_fkey FOREIGN KEY (dh) REFERENCES public.batorder(batorderid);
+
+
+--
+-- Name: lineup lineup_teamid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.lineup
+    ADD CONSTRAINT lineup_teamid_fkey FOREIGN KEY (teamid) REFERENCES public.teams(teamid);
+
+
+--
+-- Name: pitcherstats pitcherstats_gameid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.pitcherstats
+    ADD CONSTRAINT pitcherstats_gameid_fkey FOREIGN KEY (gameid) REFERENCES public.games(gameid);
+
+
+--
+-- Name: pitcherstats pitcherstats_playerid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.pitcherstats
+    ADD CONSTRAINT pitcherstats_playerid_fkey FOREIGN KEY (playerid) REFERENCES public.players(playerid);
+
+
+--
+-- Name: pitcherstats pitcherstats_teamid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.pitcherstats
+    ADD CONSTRAINT pitcherstats_teamid_fkey FOREIGN KEY (teamid) REFERENCES public.teams(teamid);
+
+
+--
+-- Name: pitchseq pitchseq_atbatid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.pitchseq
+    ADD CONSTRAINT pitchseq_atbatid_fkey FOREIGN KEY (atbatid) REFERENCES public.atbats(atbatid);
+
+
+--
+-- PostgreSQL database dump complete
+--
+
