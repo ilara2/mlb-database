@@ -1,0 +1,17 @@
+
+# Ignore executables
+*.exe
+*.out
+
+# Ignore python cache
+__pycache__
+
+# Ignore VS Code config
+.vscode
+
+# Ignore PyLint config
+.pylintrc
+
+# Ignore unnecessary folders/files
+old_scripts
+trash
