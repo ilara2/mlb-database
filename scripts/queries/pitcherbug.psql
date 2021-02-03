@@ -1,0 +1,26 @@
+
+-- 565555
+
+-- select a.lname, b.gameid, b.teamid
+-- from players a
+-- natural join pitcherstats b
+-- where gameid=565555
+-- and teamid=9
+-- ;
+
+-- Finds teams with multiple pitchers with the same last name
+
+select gameid, teamid
+from
+	(select a.lname, b.gameid, b.teamid
+	from players a
+	natural join pitcherstats b) c
+group by gameid, teamid
+having count(distinct lname) < count(lname)
+;
+
+select *
+from pitcherstats
+where gameid=565555
+and teamid=9
+;
