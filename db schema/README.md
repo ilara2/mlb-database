@@ -1,7 +1,7 @@
-# Creating the database
-Create a database using the `createdb` command.
+## Creating the database
+Create and confiure the database using the following two commands.
 ```sql
-~$ createdb -T template0 *dbname*
+$ createdb -T template0 dbname
+$ psql dbname < mlb_db.schema
 ```
-If there is a permission error check out this possible [solution](https://stackoverflow.com/questions/43734650/createdb-database-creation-failed-error-permission-denied-to-create-database)
-
+If there is a permission error check out this possible [solution](https://stackoverflow.com/questions/43734650/createdb-database-creation-failed-error-permission-denied-to-create-database).
