@@ -30,27 +30,6 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
---
--- Name: pitcher_profile(integer); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION public.pitcher_profile(playerid integer) RETURNS TABLE(type character varying, count bigint)
-    LANGUAGE plpgsql
-    AS $$
-begin
-return query
-select b.type, count(*) as count
-from 
-(select atbatid
-from atbats
-where pitcherid=playerid) a
-inner join pitchseq b
-on a.atbatid = b.atbatid
-group by b.type
-order by b.type;
-end; $$;
-
-
 SET default_tablespace = '';
 
 SET default_with_oids = false;
