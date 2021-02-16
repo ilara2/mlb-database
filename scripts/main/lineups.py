@@ -11,7 +11,6 @@ from db import DB
 class Lineups(BrowserProcess):
 	delay = 5
 	url = 'https://www.mlb.com/starting-lineups/'
-	# url = 'https://www.mlb.com/starting-lineups/2020-07-31'
 
 	def scrape(self):
 		date = self.soup.find('div', class_='starting-lineups__date-title').text.strip()

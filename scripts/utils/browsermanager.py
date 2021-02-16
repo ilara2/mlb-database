@@ -60,7 +60,7 @@ class BrowserManager():
 			browser.quit()
 
 	def run(self):
-		"""Starts the magic"""
+		"""Starts the Manager"""
 		try:
 			self._startbrowsers()
 			self._start()

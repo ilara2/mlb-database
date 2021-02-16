@@ -7,7 +7,6 @@ import psycopg2
 class DB():
 	"""Connects to local psql database and provide helper functions"""
 	def __init__(self):
-		"""Hello ther emother sucka"""
 		conn_str = """
 			host=localhost
 			port=5432
@@ -20,7 +19,6 @@ class DB():
 		self.cur = self.conn.cursor()
 
 	def __enter__(self):
-		"""Hello there mother sucka"""
 		return self
 
 	def __exit__(self, exc_type, exc_value, traceback):
@@ -116,7 +114,7 @@ class DB():
 	def getgameids(self, years: list, rand: bool = True) -> list:
 		"""Returns game ids of games played during years"""
 		query = 'select gameid from gameids where'
-		query += ' year={} or' * (len(years) -1)
+		query += ' year={} or' * (len(years) - 1)
 		query += ' year={}'
 		if rand:
 			query += ' order by random()'

@@ -10,7 +10,7 @@ from errors import LeftOverPitchers
 from hamming import Hamming
 # from json import dumps
 
-# - BUG program inserts two data rows where there is an intentional walk
+# - BUG program inserts two data rows when there is an intentional walk
 #			ex: gameid - 565230
 
 class AtBats(BrowserProcess):
@@ -153,9 +153,7 @@ class AtBats(BrowserProcess):
 
 if __name__ == '__main__':
 	from browsermanager import BrowserManager
-	# with DB() as db:
-	# 	terms = db.getgameids([2017])
-	terms = [[567157]]
-	# terms = [[565230]]
+	with DB() as db:
+		terms = db.getgameids([2019, 2020])
 	BrowserManager(AtBats, terms, 1, 1).run()
 	

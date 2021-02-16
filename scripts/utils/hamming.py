@@ -1,4 +1,7 @@
 """Implementation of Hamming and Edit distance"""
+
+from sys import maxsize
+
 class Hamming():
 	"""Class holding two methods: dist() and closest()"""
 	@classmethod
@@ -28,7 +31,7 @@ class Hamming():
 		*name* the original string.
 		*targest* a list of desired strings.
 		"""
-		val = 99999999
+		val = maxsize
 		idx = -1
 		for i, row in enumerate(targets):
 			d = cls.dist(name, row[0])

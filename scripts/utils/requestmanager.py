@@ -2,7 +2,7 @@
 from threading import Semaphore
 
 class RequestManager():
-	"""Manages RequestThreads use for static web-pages"""
+	"""Manages RequestThreads use for non Javascript-rendered websites"""
 	def __init__(self, t_class, args, max_threads=10):
 		self.args = args
 		self.t_class = t_class
