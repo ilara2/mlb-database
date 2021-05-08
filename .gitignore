@@ -3,6 +3,9 @@
 *.exe
 *.out
 
+# Ignore backups
+.bak
+
 # Ignore python cache
 __pycache__
 
@@ -15,3 +18,5 @@ __pycache__
 # Ignore unnecessary folders/files
 old_scripts
 trash
+
+
