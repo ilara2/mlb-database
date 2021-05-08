@@ -4,7 +4,7 @@
 *.out
 
 # Ignore backups
-.bak
+*.bak
 
 # Ignore python cache
 __pycache__
